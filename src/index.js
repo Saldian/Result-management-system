@@ -17,7 +17,7 @@ const connect = () => {
   return mongoose.connect(
     URI,
     {
-      useNewUr1perser: true,
+      useNewUrlperser: true,
       useUnifiedTopology:
       true,
       autoIndex: false
