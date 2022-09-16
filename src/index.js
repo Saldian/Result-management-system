@@ -1,13 +1,44 @@
-const { request } = require('express')
+require('dotenv').config()
+const mongoose = require('mongoose')
+
+const { json } = require('express')
 const express = require('express')
 const res = require('express/lib/response')
 const app = express()
-const port = 3000
-
+const port = process.env.PORT
 const middleware = require('./utilities/middleware')
 
 
 app.use(express.json())
+app.use(middleware.requestLogger)
+
+const URI =  process.env.MONGODB_URI
+const connect = () => {
+  return mongoose.connect(
+    URI,
+    {
+      useNewUr1perser: true,
+      useUnifiedTopology:
+      true,
+      autoIndex: false
+    }
+  )
+
+}
+
+
+try{
+
+  mongoose.connect(URI)
+console.log('connected to mongoDB');
+
+}catch (error) {
+console.log('error connection to mongoDB:' , error.message)
+
+}
+
+
+
 
 const me = {
     Fname: 'Saljang',
@@ -41,27 +72,25 @@ let users = [
 
 ]
 
-
-
+// Get One
 app.get('/api/users/:id', (req, res) => {
     const id= req.params.id
-    const user = users.find((user)   => user.id === Number(id))
-    res.json(user)
-
-    app.get('/api/users', (req, res) => {
-      res.json(users)
-    })
-
+    const user = users.find((user) => user.id === Number(id))
+    
     if(user) {
       res.json(user)
     }
     else {
       res.status(404).end()
     }
-})
+  })
+  
+  // Get All
+    app.get('/api/users', (req, res) => {
+      res.json(users)
+    })
          
-
-
+// Delete One
 app.delete('/api/users/:id', (req, res) => {
   const id= req.params.id
      users = users.filter((user)   => user.id !== Number(id))
@@ -70,6 +99,7 @@ app.delete('/api/users/:id', (req, res) => {
 
 })
 
+// Post
 app.post('/api/users', (req,res)  => {
   const content = req.body
 
@@ -77,6 +107,7 @@ app.post('/api/users', (req,res)  => {
   
 })
 
+// Put 
 app.put('/api/users/:id', (req, res) => {
 const id = req.params.id
 res.id
